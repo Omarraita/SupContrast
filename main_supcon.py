@@ -17,6 +17,8 @@ from util import set_optimizer, save_model
 from networks.resnet_big import SupConResNet
 from losses import SupConLoss
 
+from CardioSimCLR import get_cardio_smclr
+
 try:
     import apex
     from apex import amp, optimizers
@@ -166,6 +168,10 @@ def set_loader(opt):
     elif opt.dataset == 'path':
         train_dataset = datasets.ImageFolder(root=opt.data_folder,
                                             transform=TwoCropTransform(train_transform))
+        
+    elif opt.dataset == 'cardio':
+        train_dataset = get_cardio_smclr('/home/raita/Datasets/training_patches.npz')
+        
     else:
         raise ValueError(opt.dataset)
 
