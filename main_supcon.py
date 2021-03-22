@@ -35,7 +35,7 @@ def parse_option():
                         help='save frequency')
     parser.add_argument('--batch_size', type=int, default=256,
                         help='batch_size')
-    parser.add_argument('--num_workers', type=int, default=16,
+    parser.add_argument('--num_workers', type=int, default=2,
                         help='num of workers to use')
     parser.add_argument('--epochs', type=int, default=1000,
                         help='number of training epochs')
@@ -55,7 +55,7 @@ def parse_option():
     # model dataset
     parser.add_argument('--model', type=str, default='resnet50')
     parser.add_argument('--dataset', type=str, default='cifar10',
-                        choices=['cifar10', 'cifar100', 'path'], help='dataset')
+                        choices=['cifar10', 'cifar100', 'path', 'cardio'], help='dataset')
     parser.add_argument('--mean', type=str, help='mean of dataset in path in form of str tuple')
     parser.add_argument('--std', type=str, help='std of dataset in path in form of str tuple')
     parser.add_argument('--data_folder', type=str, default=None, help='path to custom dataset')
@@ -141,13 +141,16 @@ def set_loader(opt):
     elif opt.dataset == 'path':
         mean = eval(opt.mean)
         std = eval(opt.std)
+    elif opt.dataset == 'cardio':
+        mean = (0.485, 0.456, 0.406)
+        std = (0.229, 0.224, 0.225)
     else:
         raise ValueError('dataset not supported: {}'.format(opt.dataset))
     normalize = transforms.Normalize(mean=mean, std=std)
 
     train_transform = transforms.Compose([
         #transforms.RandomResizedCrop(size=opt.size, scale=(0.2, 1.)),
-        transforms.Resize(size=opt.size, scale=(0.2, 1.))
+        transforms.Resize(size=opt.size),
         transforms.RandomHorizontalFlip(),
         transforms.RandomApply([
             transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)
@@ -170,8 +173,8 @@ def set_loader(opt):
                                             transform=TwoCropTransform(train_transform))
         
     elif opt.dataset == 'cardio':
-        train_dataset = get_cardio_smclr('/home/raita/Datasets/training_patches.npz')
-        
+        train_dataset = get_cardio_smclr(opt.data_folder)
+        print('cardio dataset')
     else:
         raise ValueError(opt.dataset)
 
