@@ -10,7 +10,7 @@ from PIL import Image
 class CardioSimCLRDataset(Dataset):
     
     """Dataset of images. Returns unlabelled dataset for contrastive learning"""
-    def __init__(self, npz_file, transform=None, to_tensor=False, to_normalize = False):
+    def __init__(self, npz_file, transform=None, to_tensor=False, to_normalize = True):
         """
         Args:
             npz_file (string): Path to the npz file with patches and labels.
@@ -28,14 +28,25 @@ class CardioSimCLRDataset(Dataset):
     def __getitem__(self, idx):
         if torch.is_tensor(idx):
             idx = idx.tolist()
-
+        
         image = self.patches[idx]
         img = Image.fromarray(image)
-
+        label = np.array([self.labels[idx]])
+        
         if self.transform is not None:
             image = self.transform(img)
-
-        sample = (image, -1) 
+            
+        if self.tensor==True : 
+            trsf = transforms.ToTensor()
+            image = trsf(image)/255
+            
+        if self.norm==True :         
+            trsf2 = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+            image = trsf2(image)
+            
+        label = torch.from_numpy(label)
+        
+        sample = (image, label) 
     
         return sample
 
