@@ -10,7 +10,7 @@ from PIL import Image
 class CardioSimCLRDataset(Dataset):
     
     """Dataset of images. Returns unlabelled dataset for contrastive learning"""
-    def __init__(self, npz_file, transform=None, to_tensor=False, to_normalize = True):
+    def __init__(self, npz_file, transform=None, to_tensor=False, to_normalize = False):
         """
         Args:
             npz_file (string): Path to the npz file with patches and labels.
