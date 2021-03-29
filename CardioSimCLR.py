@@ -58,7 +58,7 @@ def get_simclr_transform(size, s=1):
                                               transforms.RandomApply([color_jitter], p=0.8),
                                               transforms.RandomGrayscale(p=0.2),
                                               GaussianBlur(kernel_size=int(0.1 * size)),
-                                              transforms.ToTensor()])
+                                              transforms.ToTensor(), transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))])])
         return data_transforms
 
 def load_data(file_path): 
